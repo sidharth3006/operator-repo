@@ -1,0 +1,4 @@
+
+
+
+kubebuilder create api --group compute --version v1 --kind EC2Instance
