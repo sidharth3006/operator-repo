@@ -28,3 +28,12 @@ go.work
 
 # Kubeconfig might contain secrets
 *.kubeconfig
+
+# Environment variables with secrets
+.env
+.env.local
+.env.*.local
+
+# AWS credentials
+*.pem
+credentials

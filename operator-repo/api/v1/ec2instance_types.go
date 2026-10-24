@@ -33,18 +33,29 @@ type EC2InstanceSpec struct {
 
 	// foo is an example field of EC2Instance. Edit ec2instance_types.go to remove/update
 	// +optional
-    AmiID string `json:"amiID"` 
-	SshKey string `json:"sshKey"` 
-	InstanceType string `json:"instanceType"` 
-	Subnet string `json:"subnet"`  
-	Tags map[string]string `json:"tags,omitempt"` 
-	Storage StorageConfig `json:"storage,omitempty"`
-
+	InstanceType       string            `json:"instanceType"`
+	AMIID              string            `json:"amiId"`
+	Region             string            `json:"region"`
+	AvailabilityZone   string            `json:"availabilityZone,omitempty"`
+	KeyPair            string            `json:"keyPair,omitempty"`
+	SecurityGroups     []string          `json:"securityGroups,omitempty"`
+	Subnet             string            `json:"subnet,omitempty"`
+	UserData           string            `json:"userData,omitempty"`
+	Tags               map[string]string `json:"tags,omitempty"`
+	Storage            StorageConfig     `json:"storage,omitempty"`
+	AssosciatePublicIP bool              `json:"assosciatePublicIP,omitempty"`
 }
 
 type StorageConfig struct {
-    Size int `json:"size"` 
-	Type string `json:"type"`
+	RootVolume        VolumeConfig   `json:"rootVolume,omitempty"`
+	AdditionalVolumes []VolumeConfig `json:"additionalVolumes,omitempty"`
+}
+
+type VolumeConfig struct {
+	Size       int32  `json:"size"`
+	Type       string `json:"type,omitempty"`
+	DeviceName string `json:"deviceName,omitempty"`
+	Encrypted  bool   `json:"encrypted,omitempty"`
 }
 
 // EC2InstanceStatus defines the observed state of EC2Instance.
@@ -63,14 +74,10 @@ type EC2InstanceStatus struct {
 	// - "Progressing": the resource is being created or updated
 	// - "Degraded": the resource failed to reach or maintain its desired state
 	//
-	// The status of each condition is one of True, False, or Unknown.
-	// +listType=map
-	// +listMapKey=type
-	// +optional
-	Conditions []metav1.Condition `json:"conditions,omitempty"`
-	Phase string `json:"phase,omitempty"` 
-	InstanceId string `json:"instanceId,omitempty"` 
-	PublicIP string `json:"publicIP,omitempty"` 
+
+	InstanceId string `json:"instanceId,omitempty"`
+	PublicIp   string `json:"publicIp,omitempty"`
+	State      string `json:"state,omitempty"`
 }
 
 // +kubebuilder:object:root=true
@@ -100,6 +107,12 @@ type EC2InstanceList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitzero"`
 	Items           []EC2Instance `json:"items"`
+}
+
+type CreatedInstanceInfo struct {
+	InstanceId string `json:"instanceId"`
+	PublicIp   string `json:"publicIp"`
+	State      string `json:"state"`
 }
 
 func init() {
